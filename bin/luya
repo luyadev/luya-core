@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+// loaders array
+$loaders = [
+	'vendor/autoload.php',
+	__DIR__ . '/../vendor/autoload.php',
+	__DIR__ . '/../../vendor/autoload.php',
+];
+// find vendor if exists
+foreach ($loaders as $file) {
+	if (file_exists($file)) {
+		require($file);
+		$vendor = pathinfo($file, PATHINFO_DIRNAME);
+	}
+}
+
+$boot = new \luya\Boot();
+$boot->configFile = 'configs/server.php';
+$boot->setYiiPath($vendor . '/yiisoft/yii2/Yii.php');
+$boot->applicationConsole();
