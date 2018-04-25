@@ -2,6 +2,8 @@
 
 namespace luya\helpers;
 
+use yii\helpers\BaseStringHelper;
+
 /**
  * Helper methods when dealing with Strings.
  *
@@ -17,7 +19,7 @@ namespace luya\helpers;
  * @author Basil Suter <basil@nadar.io>
  * @since 1.0.0
  */
-class StringHelper extends \yii\helpers\BaseStringHelper
+class StringHelper extends BaseStringHelper
 {
     /**
      * TypeCast a string to its specific types.
@@ -149,5 +151,31 @@ class StringHelper extends \yii\helpers\BaseStringHelper
         }
 
         return $state;
+    }
+    
+    /**
+     * "Minify" html content.
+     * 
+     * + remove space
+     * + remove tabs
+     * + remove newlines
+     * + remove html comments
+     * 
+     * @param string $content The content to minify.
+     * @param array $options Optional arguments to provide for minification:
+     * - comments: boolean, where html comments should be removed or not. defaults to false
+     * @return mixed Returns the minified content.
+     * @since 1.0.7
+     */
+    public static function minify($content, array $options = [])
+    {
+        $min = preg_replace(['/[\n\r]/', '/\>[^\S ]+/s', '/[^\S ]+\</s', '/(\s)+/s', ], ['', '>', '<', '\\1'], trim($content));
+        $min = str_replace(['> <'], ['><'], $min);
+        
+        if (ArrayHelper::getValue($options, 'comments', false)) {
+            $min = preg_replace('/<!--(.*)-->/Uis', '', $min);
+        }
+        
+        return $min;
     }
 }

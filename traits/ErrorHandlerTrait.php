@@ -2,10 +2,13 @@
 
 namespace luya\traits;
 
-use yii\web\NotFoundHttpException;
+use Yii;
 use yii\helpers\Json;
 use Curl\Curl;
 use luya\helpers\Url;
+use luya\helpers\ObjectHelper;
+use luya\helpers\StringHelper;
+use luya\helpers\ArrayHelper;
 
 /**
  * ErrorHandler trait to extend the renderException method with an api call if enabled.
@@ -29,10 +32,28 @@ trait ErrorHandlerTrait
     public $transferException = false;
 
     /**
+     * @var \Curl\Curl|null The curl object from the last error api call.
+     * @since 1.0.5
+     */
+    public $lastTransferCall;
+    
+    /**
+     * @var array An array of exceptions which are whitelisted and therefore NOT TRANSFERED.
+     * @since 1.0.5
+     */
+    public $whitelist = ['yii\web\NotFoundHttpException'];
+    
+    /**
+     * @var array
+     * @since 1.0.6
+     */
+    public $sensitiveKeys = ['password', 'pwd', 'pass', 'passwort', 'pw', 'token', 'hash', 'authorization'];
+    
+    /**
      * Send a custom message to the api server event its not related to an exception.
      *
-     * Sometimes you just want to pass informations to your application, this method allows you to transfer
-     * a message to your error api server.
+     * Sometimes you just want to pass informations from your application, this method allows you to transfer
+     * a message to the error api server.
      *
      * Example of sending a message
      *
@@ -64,10 +85,15 @@ trait ErrorHandlerTrait
     {
         if ($this->transferException) {
             $curl = new Curl();
+            $curl->setOpt(CURLOPT_CONNECTTIMEOUT, 2);
+            $curl->setOpt(CURLOPT_TIMEOUT, 2);
             $curl->post(Url::ensureHttp(rtrim($this->api, '/')).'/create', [
                 'error_json' => Json::encode($data),
             ]);
-            return !$curl->error;
+            
+            $this->lastTransferCall = $curl;
+            
+            return $curl->isSuccess();
         }
         
         return null;
@@ -78,11 +104,9 @@ trait ErrorHandlerTrait
      */
     public function renderException($exception)
     {
-        if ($exception instanceof NotFoundHttpException || !$this->transferException) {
-            return parent::renderException($exception);
+        if (!ObjectHelper::isInstanceOf($exception, $this->whitelist, false) && $this->transferException) {
+            $this->apiServerSendData($this->getExceptionArray($exception));
         }
-        
-        $this->apiServerSendData($this->getExceptionArray($exception));
         
         return parent::renderException($exception);
     }
@@ -129,19 +153,27 @@ trait ErrorHandlerTrait
             'message' => $_message,
             'file' => $_file,
             'line' => $_line,
-            'requestUri' => (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : null,
-            'serverName' => (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null,
+            'requestUri' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null,
+            'serverName' => isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null,
             'date' => date('d.m.Y H:i'),
             'trace' => $_trace,
             'previousException' => $_previousException,
-            'ip' => (isset($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : null,
-            'get' => (isset($_GET)) ? $_GET : [],
-            'post' => (isset($_POST)) ? $_POST : [],
-            'session' => (isset($_SESSION)) ? $_SESSION : [],
-            'server' => (isset($_SERVER)) ? $_SERVER : [],
+            'ip' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
+            'get' => isset($_GET) ? ArrayHelper::coverSensitiveValues($_GET, $this->sensitiveKeys) : [],
+            'post' => isset($_POST) ? ArrayHelper::coverSensitiveValues($_POST, $this->sensitiveKeys) : [],
+            'session' => isset($_SESSION) ? ArrayHelper::coverSensitiveValues($_SESSION, $this->sensitiveKeys) : [],
+            'server' => isset($_SERVER) ? ArrayHelper::coverSensitiveValues($_SERVER, $this->sensitiveKeys) : [],
+            'profiling' => Yii::getLogger()->profiling,
+            'logger' => Yii::getLogger()->messages,
         ];
     }
     
+    /**
+     * Build trace array from exception.
+     *
+     * @param object $exception
+     * @return array
+     */
     private function buildTrace($exception)
     {
         $_trace = [];
@@ -153,6 +185,7 @@ trait ErrorHandlerTrait
                 'class' => isset($item['class']) ? $item['class'] : null,
             ];
         }
+        
         return $_trace;
     }
 }

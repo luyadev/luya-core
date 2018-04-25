@@ -19,6 +19,7 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param string $articleBody
+     * @return \luya\web\jsonld\Article
      */
     public function setArticleBody($articleBody);
 
@@ -29,6 +30,7 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param string $articleSection
+     * @return \luya\web\jsonld\Article
      */
     public function setArticleSection($articleSection);
 
@@ -39,6 +41,7 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param int|string $pageEnd
+     * @return \luya\web\jsonld\Article
      */
     public function setPageEnd($pageEnd);
 
@@ -49,6 +52,7 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param int|string $pageStart
+     * @return \luya\web\jsonld\Article
      */
     public function setPageStart($pageStart);
 
@@ -59,18 +63,10 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param string $pagination
+     * @return \luya\web\jsonld\Article
      */
     public function setPagination($pagination);
 
-    /**
-     * @return SpeakableSpecification|URL
-     */
-    public function getSpeakable();
-
-    /**
-     * @param SpeakableSpecification|URL $speakable
-     */
-    public function setSpeakable($speakable);
 
     /**
      * @return int
@@ -79,6 +75,7 @@ interface ArticleInterface extends CreativeWorkInterface
 
     /**
      * @param int $wordCount
+     * @return \luya\web\jsonld\Article
      */
     public function setWordCount($wordCount);
 }

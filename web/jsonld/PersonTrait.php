@@ -2,6 +2,8 @@
 
 namespace luya\web\jsonld;
 
+use luya\helpers\ObjectHelper;
+
 /**
  * JsonLd - Person trait
  *
@@ -50,7 +52,7 @@ trait PersonTrait
      * @param PostalAddress|string $address
      * @return PersonTrait
      */
-    public function setAddress($address)
+    public function setAddress(PostalAddress $address)
     {
         $this->_address = $address;
         return $this;
@@ -75,28 +77,6 @@ trait PersonTrait
     public function setAffiliation(Organization $affiliation)
     {
         $this->_affiliation = $affiliation;
-        return $this;
-    }
-
-    private $_alumniOf;
-
-    /**
-     * @return EducationalOrganization|Organization
-     */
-    public function getAlumniOf()
-    {
-        return $this->_alumniOf;
-    }
-
-    /**
-     * An organization that the person is an alumni of.
-     *
-     * @param EducationalOrganization|Organization $alumniOf
-     * @return PersonTrait
-     */
-    public function setAlumniOf($alumniOf)
-    {
-        $this->_alumniOf = $alumniOf;
         return $this;
     }
 
@@ -126,7 +106,7 @@ trait PersonTrait
     private $_birthDate;
 
     /**
-     * @return Date
+     * @return string
      */
     public function getBirthDate()
     {
@@ -136,12 +116,12 @@ trait PersonTrait
     /**
      * Date of birth.
      *
-     * @param Date $birthDate
+     * @param DateValue $birthDate
      * @return PersonTrait
      */
-    public function setBirthDate($birthDate)
+    public function setBirthDate(DateValue $birthDate)
     {
-        $this->_birthDate = $birthDate;
+        $this->_birthDate = $birthDate->getValue();
         return $this;
     }
 
@@ -253,7 +233,7 @@ trait PersonTrait
      * @param ContactPoint $contactPoint
      * @return PersonTrait
      */
-    public function setContactPoint($contactPoint)
+    public function setContactPoint(ContactPoint $contactPoint)
     {
         $this->_contactPoint = $contactPoint;
         return $this;
@@ -262,7 +242,7 @@ trait PersonTrait
     private $_deathDate;
 
     /**
-     * @return Date
+     * @return string
      */
     public function getDeathDate()
     {
@@ -272,12 +252,12 @@ trait PersonTrait
     /**
      * Date of death.
      *
-     * @param Date $deathDate
+     * @param DateValue $deathDate
      * @return PersonTrait
      */
-    public function setDeathDate($deathDate)
+    public function setDeathDate(DateValue $deathDate)
     {
-        $this->_deathDate = $deathDate;
+        $this->_deathDate = $deathDate->getValue();
         return $this;
     }
 
@@ -297,7 +277,7 @@ trait PersonTrait
      * @param Place $deathPlace
      * @return PersonTrait
      */
-    public function setDeathPlace($deathPlace)
+    public function setDeathPlace(Place $deathPlace)
     {
         $this->_deathPlace = $deathPlace;
         return $this;
@@ -319,7 +299,7 @@ trait PersonTrait
      * @param string $duns
      * @return PersonTrait
      */
-    public function setDuns($duns)
+    public function setDuns(Person $duns)
     {
         $this->_duns = $duns;
         return $this;
@@ -432,6 +412,8 @@ trait PersonTrait
      */
     public function setFunder($funder)
     {
+        ObjectHelper::isInstanceOf($funder, [Organization::class, PersonInterface::class]);
+        
         $this->_funder = $funder;
         return $this;
     }
@@ -503,50 +485,6 @@ trait PersonTrait
     public function setGlobalLocationNumber($globalLocationNumber)
     {
         $this->_globalLocationNumber = $globalLocationNumber;
-        return $this;
-    }
-
-    private $_hasOccupation;
-
-    /**
-     * @return Occupation
-     */
-    public function getHasOccupation()
-    {
-        return $this->_hasOccupation;
-    }
-
-    /**
-     * The Person's occupation. For past professions, use Role for expressing dates.
-     *
-     * @param Occupation $hasOccupation
-     * @return PersonTrait
-     */
-    public function setHasOccupation($hasOccupation)
-    {
-        $this->_hasOccupation = $hasOccupation;
-        return $this;
-    }
-
-    private $_hasOfferCatalog;
-
-    /**
-     * @return OfferCatalog
-     */
-    public function getHasOfferCatalog()
-    {
-        return $this->_hasOfferCatalog;
-    }
-
-    /**
-     * Indicates an OfferCatalog listing for this Organization, Person, or Service.
-     *
-     * @param OfferCatalog $hasOfferCatalog
-     * @return PersonTrait
-     */
-    public function setHasOfferCatalog($hasOfferCatalog)
-    {
-        $this->_hasOfferCatalog = $hasOfferCatalog;
         return $this;
     }
 
@@ -744,7 +682,7 @@ trait PersonTrait
      * @param Offer $makesOffer
      * @return PersonTrait
      */
-    public function setMakesOffer($makesOffer)
+    public function setMakesOffer(Offer $makesOffer)
     {
         $this->_makesOffer = $makesOffer;
         return $this;
@@ -811,53 +749,9 @@ trait PersonTrait
      * @param Country $nationality
      * @return PersonTrait
      */
-    public function setNationality($nationality)
+    public function setNationality(Country $nationality)
     {
         $this->_nationality = $nationality;
-        return $this;
-    }
-
-    private $_netWorth;
-
-    /**
-     * @return MonetaryAmount|PriceSpecification
-     */
-    public function getNetWorth()
-    {
-        return $this->_netWorth;
-    }
-
-    /**
-     * The total financial value of the person as calculated by subtracting assets from liabilities.
-     *
-     * @param MonetaryAmount|PriceSpecification $netWorth
-     * @return PersonTrait
-     */
-    public function setNetWorth($netWorth)
-    {
-        $this->_netWorth = $netWorth;
-        return $this;
-    }
-
-    private $_owns;
-
-    /**
-     * @return OwnershipInfo|Product
-     */
-    public function getOwns()
-    {
-        return $this->_owns;
-    }
-
-    /**
-     * Products owned by the organization or person.
-     *
-     * @param OwnershipInfo|Product $owns
-     * @return PersonTrait
-     */
-    public function setOwns($owns)
-    {
-        $this->_owns = $owns;
         return $this;
     }
 
@@ -955,28 +849,6 @@ trait PersonTrait
         return $this;
     }
 
-    private $_seeks;
-
-    /**
-     * @return Demand
-     */
-    public function getSeeks()
-    {
-        return $this->_seeks;
-    }
-
-    /**
-     * A pointer to products or services sought by the organization or person (demand).
-     *
-     * @param Demand $seeks
-     * @return PersonTrait
-     */
-    public function setSeeks($seeks)
-    {
-        $this->_seeks = $seeks;
-        return $this;
-    }
-
     private $_sibling;
 
     /**
@@ -1018,6 +890,8 @@ trait PersonTrait
      */
     public function setSponsor($sponsor)
     {
+        ObjectHelper::isInstanceOf($sponsor, [Organization::class, PersonInterface::class]);
+        
         $this->_sponsor = $sponsor;
         return $this;
     }
@@ -1107,28 +981,6 @@ trait PersonTrait
     public function setVatID($vatID)
     {
         $this->_vatID = $vatID;
-        return $this;
-    }
-
-    private $_weight;
-
-    /**
-     * @return QuantitativeValue
-     */
-    public function getWeight()
-    {
-        return $this->_weight;
-    }
-
-    /**
-     * The weight of the product or person.
-     *
-     * @param QuantitativeValue $weight
-     * @return PersonTrait
-     */
-    public function setWeight($weight)
-    {
-        $this->_weight = $weight;
         return $this;
     }
 

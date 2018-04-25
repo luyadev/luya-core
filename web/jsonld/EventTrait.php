@@ -2,6 +2,8 @@
 
 namespace luya\web\jsonld;
 
+use luya\helpers\ObjectHelper;
+
 /**
  * JsonLd - Event trait
  *
@@ -58,28 +60,6 @@ trait EventTrait
         return $this;
     }
 
-    private $_aggregateRating;
-
-    /**
-     * @return AggregateRating
-     */
-    public function getAggregateRating()
-    {
-        return $this->_aggregateRating;
-    }
-
-    /**
-     * The overall rating, based on a collection of reviews or ratings, of the item.
-     *
-     * @param AggregateRating $aggregateRating
-     * @return EventTrait
-     */
-    public function setAggregateRating($aggregateRating)
-    {
-        $this->_aggregateRating = $aggregateRating;
-        return $this;
-    }
-
     private $_attendee;
 
     /**
@@ -98,29 +78,9 @@ trait EventTrait
      */
     public function setAttendee($attendee)
     {
+        ObjectHelper::isInstanceOf($attendee, [Organization::class, PersonInterface::class]);
+        
         $this->_attendee = $attendee;
-        return $this;
-    }
-
-    private $_audience;
-
-    /**
-     * @return Audience
-     */
-    public function getAudience()
-    {
-        return $this->_audience;
-    }
-
-    /**
-     * An intended audience, i.e. a group for whom something was created. Supersedes serviceAudience.
-     *
-     * @param Audience $audience
-     * @return EventTrait
-     */
-    public function setAudience($audience)
-    {
-        $this->_audience = $audience;
         return $this;
     }
 
@@ -142,6 +102,8 @@ trait EventTrait
      */
     public function setComposer($composer)
     {
+        ObjectHelper::isInstanceOf($author, [Organization::class, PersonInterface::class]);
+        
         $this->_composer = $composer;
         return $this;
     }
@@ -164,6 +126,8 @@ trait EventTrait
      */
     public function setContributor($contributor)
     {
+        ObjectHelper::isInstanceOf($contributor, [Organization::class, PersonInterface::class]);
+        
         $this->_contributor = $contributor;
         return $this;
     }
@@ -258,28 +222,6 @@ trait EventTrait
         return $this;
     }
 
-    private $_eventStatus;
-
-    /**
-     * @return EventStatusType
-     */
-    public function getEventStatus()
-    {
-        return $this->_eventStatus;
-    }
-
-    /**
-     * An eventStatus of an event represents its status; particularly useful when an event is cancelled or rescheduled.
-     *
-     * @param EventStatusType $eventStatus
-     * @return EventTrait
-     */
-    public function setEventStatus($eventStatus)
-    {
-        $this->_eventStatus = $eventStatus;
-        return $this;
-    }
-
     private $_funder;
 
     /**
@@ -298,6 +240,8 @@ trait EventTrait
      */
     public function setFunder($funder)
     {
+        ObjectHelper::isInstanceOf($funder, [Organization::class, PersonInterface::class]);
+        
         $this->_funder = $funder;
         return $this;
     }
@@ -391,29 +335,6 @@ trait EventTrait
         $this->_maximumAttendeeCapacity = $maximumAttendeeCapacity;
     }
 
-    private $_offers;
-
-    /**
-     * @return Offer
-     */
-    public function getOffers()
-    {
-        return $this->_offers;
-    }
-
-    /**
-     * An offer to provide this item—for example, an offer to sell a product, rent the DVD of a movie,
-     * perform a service, or give away tickets to an event.
-     *
-     * @param Offer $offers
-     * @return EventTrait
-     */
-    public function setOffers($offers)
-    {
-        $this->_offers = $offers;
-        return $this;
-    }
-
     private $_organizer;
 
     /**
@@ -432,6 +353,8 @@ trait EventTrait
      */
     public function setOrganizer($organizer)
     {
+        ObjectHelper::isInstanceOf($organizer, [Organization::class, PersonInterface::class]);
+        
         $this->_organizer = $organizer;
         return $this;
     }
@@ -455,6 +378,8 @@ trait EventTrait
      */
     public function setPerformer($performer)
     {
+        ObjectHelper::isInstanceOf($performer, [Organization::class, PersonInterface::class]);
+        
         $this->_performer = $performer;
         return $this;
     }
@@ -462,7 +387,7 @@ trait EventTrait
     private $_previousStartDate;
 
     /**
-     * @return Date
+     * @return string
      */
     public function getPreviousStartDate()
     {
@@ -476,10 +401,10 @@ trait EventTrait
      * In the (rare) case of an event that has been postponed and rescheduled multiple times,
      * this field may be repeated.
      *
-     * @param Date $previousStartDate
+     * @param DateValue $previousStartDate
      * @return EventTrait
      */
-    public function setPreviousStartDate($previousStartDate)
+    public function setPreviousStartDate(DateValue $previousStartDate)
     {
         $this->_previousStartDate = $previousStartDate;
         return $this;
@@ -502,7 +427,7 @@ trait EventTrait
      * @param CreativeWork $recordedIn
      * @return EventTrait
      */
-    public function setRecordedIn($recordedIn)
+    public function setRecordedIn(CreativeWork $recordedIn)
     {
         $this->_recordedIn = $recordedIn;
         return $this;
@@ -530,29 +455,6 @@ trait EventTrait
         return $this;
     }
 
-    private $_review;
-
-    /**
-     * @return Review
-     */
-    public function getReview()
-    {
-        return $this->_review;
-    }
-
-    /**
-     * A review of the item.
-     * Supersedes reviews.
-     *
-     * @param Review $review
-     * @return EventTrait
-     */
-    public function setReview($review)
-    {
-        $this->_review = $review;
-        return $this;
-    }
-
     private $_sponsor;
 
     /**
@@ -572,6 +474,8 @@ trait EventTrait
      */
     public function setSponsor($sponsor)
     {
+        ObjectHelper::isInstanceOf($sponsor, [Organization::class, PersonInterface::class]);
+        
         $this->_sponsor = $sponsor;
         return $this;
     }
@@ -589,10 +493,10 @@ trait EventTrait
     /**
      * The start date and time of the item (in ISO 8601 date format).
      *
-     * @param Date|DateTime $startDate
+     * @param DateTimeValue $startDate
      * @return EventTrait
      */
-    public function setStartDate($startDate)
+    public function setStartDate(DateTimeValue $startDate)
     {
         $this->_startDate = $startDate;
         return $this;
@@ -616,7 +520,7 @@ trait EventTrait
      *
      * @param Event $subEvent
      */
-    public function setSubEvent($subEvent)
+    public function setSubEvent(Event $subEvent)
     {
         $this->_subEvent = $subEvent;
     }
@@ -639,7 +543,7 @@ trait EventTrait
      * @param Event $superEvent
      * @return EventTrait
      */
-    public function setSuperEvent($superEvent)
+    public function setSuperEvent(Event $superEvent)
     {
         $this->_superEvent = $superEvent;
         return $this;
@@ -664,6 +568,8 @@ trait EventTrait
      */
     public function setTranslator($translator)
     {
+        ObjectHelper::isInstanceOf($translator, [Organization::class, PersonInterface::class]);
+        
         $this->_translator = $translator;
         return $this;
     }
@@ -708,7 +614,7 @@ trait EventTrait
      * @param CreativeWork $workFeatured
      * @return EventTrait
      */
-    public function setWorkFeatured($workFeatured)
+    public function setWorkFeatured(CreativeWork $workFeatured)
     {
         $this->_workFeatured = $workFeatured;
         return $this;
@@ -730,7 +636,7 @@ trait EventTrait
      * @param CreativeWork $workPerformed
      * @return EventTrait
      */
-    public function setWorkPerformed($workPerformed)
+    public function setWorkPerformed(CreativeWork $workPerformed)
     {
         $this->_workPerformed = $workPerformed;
         return $this;

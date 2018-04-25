@@ -8,6 +8,7 @@ use yii\base\InvalidConfigException;
 use luya\web\Request;
 use luya\web\UrlManager;
 use yii\base\BaseObject;
+use luya\web\Controller;
 
 /**
  * Run any route inside the provided module.
@@ -247,6 +248,25 @@ class ModuleReflection extends BaseObject
         Yii::info('LUYA module run module "'.$this->module->id.'" route ' . $requestRoute['route'], __METHOD__);
         
         $this->controller = $controller[0];
+        $originalController = Yii::$app->controller;
+        
+        /**
+         * Override the current application controller in order to ensure current() url handling which is used
+         * for relativ urls/rules.
+         *
+         * @see https://github.com/luyadev/luya/issues/1730
+         */
+        $this->controller->on(Controller::EVENT_BEFORE_ACTION, function ($event) {
+            Yii::$app->controller = $this->controller;
+        });
+        /**
+         * Restore the original controller instance after rendering.
+         *
+         * @see https://github.com/luyadev/luya/issues/1768
+         */
+        $this->controller->on(Controller::EVENT_AFTER_ACTION, function ($event) use ($originalController) {
+            Yii::$app->controller = $originalController;
+        });
         
         // run the action on the provided controller object
         return $this->controller->runAction($controller[1], $requestRoute['args']);

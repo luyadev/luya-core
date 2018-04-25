@@ -2,6 +2,8 @@
 
 namespace luya\helpers;
 
+use yii\helpers\BaseInflector;
+
 /**
  * Helper methods which can be used for string transformations
  *
@@ -12,7 +14,7 @@ namespace luya\helpers;
  * @author Martin Petrasch <martin.petrasch@zephir.ch>
  * @since 1.0.0
  */
-class Inflector extends \yii\helpers\BaseInflector
+class Inflector extends BaseInflector
 {
     /**
      * From yii/helpers/BaseInflector:
@@ -36,9 +38,10 @@ class Inflector extends \yii\helpers\BaseInflector
             return parent::slug($string, $replacement, $lowercase);
         }
 
-        $string = preg_replace('/[`%\+=\{\}\|\\\.<>\/]+/u', '', $string);
-        $string = preg_replace('/[=\s—–-]+/u', $replacement, $string);
+        $string = preg_replace('/[`%\+=\{\}\|\\\.<>\/\_]+/u', '', $string); // replace those chars with nothing
+        $string = preg_replace('/[=\s—–-]+/u', $replacement, $string); // replace single and double spaces by $replacement char.
         $string = trim($string, $replacement);
+        
         return $lowercase ? mb_strtolower($string) : $string;
     }
 }

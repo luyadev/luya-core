@@ -24,7 +24,7 @@ abstract class Boot
     /**
      * @var string The current LUYA version (see: https://github.com/luyadev/luya/blob/master/CHANGELOG.md)
      */
-    const VERSION = '1.0.1';
+    const VERSION = '1.0.7';
     
     /**
      * @var string The path to the config file, which returns an array containing you configuration.
@@ -139,11 +139,6 @@ abstract class Boot
             if (!is_array($config)) {
                 throw new Exception("config file '".$this->configFile."' found but no array returning.");
             }
-    
-            // adding default configuration timezone if not set
-            if (!array_key_exists('timezone', $config)) {
-                $config['timezone'] = 'Europe/Berlin';
-            }
             
             // preset the values from the defaultConfigArray
             if (!empty($this->prependConfigArray())) {
@@ -159,7 +154,7 @@ abstract class Boot
     /**
      * Run the application based on the Sapi Name.
      *
-     * @return \luya\web\Application|\luya\cli\Application Application objected based on the sapi name.
+     * @return \luya\web\Application|\luya\console\Application Application objected based on the sapi name.
      */
     public function run()
     {

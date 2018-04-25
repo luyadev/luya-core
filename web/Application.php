@@ -2,11 +2,12 @@
 
 namespace luya\web;
 
+use Yii;
 use luya\traits\ApplicationTrait;
+use yii\web\ForbiddenHttpException;
 
 /**
- * Luya Web Application.
- *
+ * LUYA Web Application.
  *
  * @property \luya\cms\Menu $menu Menu component in order to build navigation from CMS module.
  * @property \luya\admin\storage\BaseFileSystemStorage $storage Storage component for reading, saving and holding files from the Admin module.
@@ -23,6 +24,29 @@ class Application extends \yii\web\Application
 {
     use ApplicationTrait;
 
+    /**
+     * @inheritdoc
+     */
+    public function handleRequest($request)
+    {
+        if ($this->ensureSecureConnection && !$request->isSecureConnection) {
+            throw new ForbiddenHttpException("Insecure connection is not allowed.");
+        }
+        
+        if ($this->ensureSecureConnection) {
+            // add secure flag to cookie
+            Yii::$app->request->csrfCookie = ['httpOnly' => true, 'secure' => true];
+            Yii::$app->session->cookieParams = ['httpOnly' => true, 'secure' => true];
+            // apply strict, hsts and x-* headers
+            Yii::$app->response->headers->set('Strict-Transport-Security', 'max-age=31536000');
+            Yii::$app->response->headers->set('X-XSS-Protection', "1; mode=block");
+            Yii::$app->response->headers->set('X-Frame-Options', "SAMEORIGIN");
+            //Yii::$app->response->headers->set('Content-Security-Policy', "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline';");
+        }
+        
+        return parent::handleRequest($request);
+    }
+    
     /**
      * @inheritdoc
      */

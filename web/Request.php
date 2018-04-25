@@ -20,7 +20,7 @@ class Request extends \yii\web\Request
      * @var boolean Force web request to enable unit tests with simulated web requests
      */
     public $forceWebRequest = false;
-
+    
     /**
      * @var string The validation cookie for cookies, should be overwritten in your configuration.
      *
@@ -48,7 +48,7 @@ class Request extends \yii\web\Request
     {
         $this->_isAdmin = $state;
     }
-
+    
     /**
      * Getter method resolves the current url request and check if admin context.
      *
@@ -63,8 +63,7 @@ class Request extends \yii\web\Request
                 $this->_isAdmin = false;
             } else {
                 $resolver = Yii::$app->composition->getResolvedPathInfo($this);
-                $pathInfo = $resolver['route'];
-                $parts = explode('/', $pathInfo);
+                $parts = explode('/', $resolver->resolvedPath);
                 $first = reset($parts);
                 
                 if (preg_match('/admin/i', $first, $results)) {
@@ -86,6 +85,6 @@ class Request extends \yii\web\Request
      */
     public function getClientLanguage($defaultValue)
     {
-        return (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : $defaultValue;
+        return isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : $defaultValue;
     }
 }
