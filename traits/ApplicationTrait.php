@@ -130,7 +130,7 @@ trait ApplicationTrait
                 case 'en':
                     return 'en_US';
                 case 'cn':
-                    return 'cn_CN';
+                    return 'zh_CN';
                 default:
                     return strtolower($lang) . '_' . strtoupper($lang);
             }

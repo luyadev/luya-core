@@ -15,6 +15,12 @@ namespace luya\base;
 interface AdminModuleInterface
 {
     /**
+     * Reset the last module menu when the menuID is same;
+     * @return false|string :module name
+     */
+    public function getMenuID();
+
+    /**
      * The menu object from the {{\luya\admin\components\AdminMenuBuilder}} class in order to store and build the administration
      * module menu elements.
      *
